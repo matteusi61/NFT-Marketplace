@@ -9,7 +9,7 @@ import {UUPSUpgradeable} from "../lib/openzeppelin-contracts/contracts/proxy/uti
 
 import {NFTFactory} from "./FactoryNFT.sol";
 
-contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
+contract OldImpMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     using Math for uint256;
 
     struct Listing {

@@ -7,7 +7,7 @@ import {ColorNFT} from "./ColorNFT.sol";
 import {Strings} from "../lib/openzeppelin-contracts/contracts/utils/Strings.sol";
 import {AccessControl} from "../lib/openzeppelin-contracts/contracts/access/AccessControl.sol";
 
-contract NFTFactory is Ownable, AccessControl {
+contract OldImpNFTFactory is Ownable, AccessControl {
     using Strings for uint256;
 
     address public cardNFT;
@@ -16,7 +16,7 @@ contract NFTFactory is Ownable, AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     address public currentImplementation;
 
-    constructor(address _cardNFT, address _colorNFT, address _starNFT, address owner) Ownable(owner) {
+    constructor(address _cardNFT, address _colorNFT, address owner) Ownable(owner) {
         cardNFT = _cardNFT;
         colorNFT = _colorNFT;
         _grantRole(ADMIN_ROLE, owner);

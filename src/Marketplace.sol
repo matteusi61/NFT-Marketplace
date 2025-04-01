@@ -85,13 +85,21 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     }
 
     function buyNFT(bytes32 listingId) external payable nonReentrant {
-        Listing storage listing = listings[listingId];
+        Listing memory listing = listings[listingId];
 
         uint256 currentPrice = calculatePrice(listingId);
         require(msg.value >= currentPrice, "Insufficient funds");
 
         curves[listing.nftContract].totalListed -= 1;
         allTotalListed -= 1;
+
+        uint256 index = listingIndex[listingId];
+        bytes32 lastListingId = allListings[allListings.length - 1];
+        allListings[index] = lastListingId;
+        listingIndex[lastListingId] = index;
+        allListings.pop();
+        delete listings[listingId];
+        delete listingIndex[listingId];
 
         IERC721(listing.nftContract).transferFrom(listing.seller, msg.sender, listing.tokenId);
 
@@ -104,13 +112,6 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
 
         emit NFTBought(listingId, msg.sender, currentPrice);
 
-        uint256 index = listingIndex[listingId];
-        bytes32 lastListingId = allListings[allListings.length - 1];
-        allListings[index] = lastListingId;
-        listingIndex[lastListingId] = index;
-        allListings.pop();
-        delete listings[listingId];
-        delete listingIndex[listingId];
     }
 
     function returnNFT(bytes32 listingId) external {
