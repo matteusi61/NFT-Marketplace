@@ -45,13 +45,13 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
         _initMints();
     }
 
-    function _initCurves() private {
+    function _initCurves() internal {
         curves[factory.colorNFT()] = Curve(200, 0, 0);
         curves[factory.cardNFT()] = Curve(180, 0, 0);
         curves[factory.starNFT()] = Curve(160, 0, 0);
     }
 
-    function _initMints() private {
+    function _initMints() internal {
         mintprice["color"] = 16764450 * curves[factory.colorNFT()].exponent / (curves[factory.colorNFT()].exponent - 2);
         mintprice["card"] = 31000000 * curves[factory.cardNFT()].exponent / (curves[factory.cardNFT()].exponent - 2);
         mintprice["star"] = 20000000 * curves[factory.starNFT()].exponent / (curves[factory.starNFT()].exponent - 2);
@@ -60,12 +60,26 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     function mintNFT(string memory nftType) external payable {
         address nftContract = _getContractByType(nftType);
         require(nftContract != address(0), "Invalid NFT type");
-        require(msg.value == mintprice[nftType], "Insufficient funds");
-        payable(owner()).transfer(mintprice[nftType]);
+
+        uint256 currPrice = getMintPrice(nftType);
+
+        require(msg.value == currPrice, "Insufficient funds");
+        payable(owner()).transfer(currPrice);
 
         uint256 tokenId = factory.createNFT(nftType, msg.sender);
         curves[nftContract].totalMinted += 1;
         emit NFTMinted(msg.sender, nftContract, tokenId);
+    }
+
+    function getMintPrice(string memory nftType) public returns (uint256) {
+        address nftContract = _getContractByType(nftType);
+        require(nftContract != address(0), "Invalid NFT type");
+
+        if (allTotalListed > 1000) {
+            return mintprice[nftType];
+        } else {
+            return (mintprice[nftType] / 5) + (mintprice[nftType] / 1250) * allTotalListed;
+        }
     }
 
     function listNFT(address nftContract, uint256 tokenId, string memory nftType) external {
@@ -111,7 +125,6 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
         }
 
         emit NFTBought(listingId, msg.sender, currentPrice);
-
     }
 
     function returnNFT(bytes32 listingId) external {

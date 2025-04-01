@@ -48,7 +48,7 @@ contract MarketplaceTest is Test {
 
     function testMintNFT() public {
         vm.startPrank(seller1);
-        marketplace.mintNFT{value: marketplace.mintprice("color")}("color");
+        marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         (,, uint256 totalMinted) = marketplace.curves(address(colorNFT));
         assertEq(totalMinted, 1, "Total minted should increment");
         assertEq(colorNFT.ownerOf(0), seller1, "NFT ownership mismatch");
@@ -56,7 +56,7 @@ contract MarketplaceTest is Test {
         console.log(colorNFT.tokenURI(0));
 
         vm.startPrank(seller2);
-        marketplace.mintNFT{value: marketplace.mintprice("card")}("card");
+        marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
         (,, totalMinted) = marketplace.curves(address(cardNFT));
         assertEq(totalMinted, 1, "Total minted should increment");
         assertEq(cardNFT.ownerOf(0), seller2, "NFT ownership mismatch");
@@ -64,7 +64,7 @@ contract MarketplaceTest is Test {
         console.log(cardNFT.tokenURI(0));
 
         vm.startPrank(seller3);
-        marketplace.mintNFT{value: marketplace.mintprice("star")}("star");
+        marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
         (,, totalMinted) = marketplace.curves(address(starNFT));
         assertEq(totalMinted, 1, "Total minted should increment");
         assertEq(starNFT.ownerOf(0), seller3, "NFT ownership mismatch");
@@ -77,7 +77,7 @@ contract MarketplaceTest is Test {
         uint256 tokenId = 0;
 
         vm.startPrank(seller1);
-        marketplace.mintNFT{value: marketplace.mintprice("color")}("color");
+        marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         IERC721(address(colorNFT)).approve(address(marketplace), 0);
         marketplace.listNFT(address(colorNFT), tokenId, "color");
 
@@ -96,14 +96,14 @@ contract MarketplaceTest is Test {
         assertEq(colorNFT.ownerOf(tokenId), buyer1, "NFT not transferred");
 
         uint256 fee = (price * marketplace.platformFee()) / 10000;
-        uint256 mintprice = marketplace.mintprice("color");
+        uint256 mintprice = marketplace.getMintPrice("color");
         assertEq(seller1.balance, initialBalance + price - mintprice - fee, "Seller payment mismatch");
         assertEq(owner.balance, fee + mintprice, "Owner balance mismatch");
     }
 
     function testCancelListing() public {
         vm.startPrank(seller1);
-        marketplace.mintNFT{value: marketplace.mintprice("color")}("color");
+        marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         IERC721(address(colorNFT)).approve(address(marketplace), 0);
         marketplace.listNFT(address(colorNFT), 0, "color");
         vm.stopPrank();
@@ -128,19 +128,19 @@ contract MarketplaceTest is Test {
     function testPriceDynamics() public {
         vm.startPrank(seller1);
         for (uint256 i = 0; i < 15; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("color")}("color");
+            marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
             IERC721(address(colorNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(colorNFT), i, "color");
         }
 
         for (uint256 i = 0; i < 15; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("card")}("card");
+            marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
             IERC721(address(cardNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(cardNFT), i, "card");
         }
 
         for (uint256 i = 0; i < 15; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("star")}("star");
+            marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
             IERC721(address(starNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(starNFT), i, "star");
         }
@@ -150,19 +150,19 @@ contract MarketplaceTest is Test {
 
         vm.startPrank(seller2);
         for (uint256 i = 15; i < 30; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("color")}("color");
+            marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
             IERC721(address(colorNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(colorNFT), i, "color");
         }
 
         for (uint256 i = 15; i < 30; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("card")}("card");
+            marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
             IERC721(address(cardNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(cardNFT), i, "card");
         }
 
         for (uint256 i = 15; i < 30; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("star")}("star");
+            marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
             IERC721(address(starNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(starNFT), i, "star");
         }
@@ -172,19 +172,19 @@ contract MarketplaceTest is Test {
 
         vm.startPrank(seller3);
         for (uint256 i = 30; i < 45; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("color")}("color");
+            marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
             IERC721(address(colorNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(colorNFT), i, "color");
         }
 
         for (uint256 i = 30; i < 45; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("card")}("card");
+            marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
             IERC721(address(cardNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(cardNFT), i, "card");
         }
 
         for (uint256 i = 30; i < 45; i++) {
-            marketplace.mintNFT{value: marketplace.mintprice("star")}("star");
+            marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
             IERC721(address(starNFT)).approve(address(marketplace), i);
             marketplace.listNFT(address(starNFT), i, "star");
         }
