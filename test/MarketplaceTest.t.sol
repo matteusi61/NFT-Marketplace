@@ -77,6 +77,7 @@ contract MarketplaceTest is Test {
         uint256 tokenId = 0;
 
         vm.startPrank(seller1);
+        uint256 mintprice = marketplace.getMintPrice("color");
         marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         IERC721(address(colorNFT)).approve(address(marketplace), 0);
         marketplace.listNFT(address(colorNFT), tokenId, "color");
@@ -96,7 +97,6 @@ contract MarketplaceTest is Test {
         assertEq(colorNFT.ownerOf(tokenId), buyer1, "NFT not transferred");
 
         uint256 fee = (price * marketplace.platformFee()) / 10000;
-        uint256 mintprice = marketplace.getMintPrice("color");
         assertEq(seller1.balance, initialBalance + price - mintprice - fee, "Seller payment mismatch");
         assertEq(owner.balance, fee + mintprice, "Owner balance mismatch");
     }

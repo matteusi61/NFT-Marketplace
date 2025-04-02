@@ -33,6 +33,7 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     bytes32[] public allListings;
     uint256 public platformFee = 250;
     uint256 public allTotalListed = 0;
+    uint256 public allTotalMinted = 0;
 
     event NFTMinted(address indexed owner, address nftContract, uint256 tokenId);
     event NFTListed(bytes32 listingId, address indexed seller, string nftType, uint256 tokenId, uint256 price);
@@ -46,9 +47,9 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     }
 
     function _initCurves() internal {
-        curves[factory.colorNFT()] = Curve(200, 0, 0);
-        curves[factory.cardNFT()] = Curve(180, 0, 0);
-        curves[factory.starNFT()] = Curve(160, 0, 0);
+        curves[factory.colorNFT()] = Curve(2000, 0, 0);
+        curves[factory.cardNFT()] = Curve(1800, 0, 0);
+        curves[factory.starNFT()] = Curve(1600, 0, 0);
     }
 
     function _initMints() internal {
@@ -58,6 +59,7 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     }
 
     function mintNFT(string memory nftType) external payable {
+        require(allTotalMinted <= 10000);
         address nftContract = _getContractByType(nftType);
         require(nftContract != address(0), "Invalid NFT type");
 
@@ -68,17 +70,21 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
 
         uint256 tokenId = factory.createNFT(nftType, msg.sender);
         curves[nftContract].totalMinted += 1;
+        allTotalMinted += 1;
         emit NFTMinted(msg.sender, nftContract, tokenId);
     }
 
-    function getMintPrice(string memory nftType) public returns (uint256) {
+    function getMintPrice(string memory nftType) public view returns (uint256) {
+        require(allTotalMinted <= 10000, "Mint is not available now!");
         address nftContract = _getContractByType(nftType);
         require(nftContract != address(0), "Invalid NFT type");
 
-        if (allTotalListed > 1000) {
+        if (allTotalMinted > 1000 && allTotalMinted <= 1445) {
             return mintprice[nftType];
+        } else if (allTotalMinted <= 1000) {
+            return (mintprice[nftType] / 5) + (mintprice[nftType] / 1250) * allTotalMinted;
         } else {
-            return (mintprice[nftType] / 5) + (mintprice[nftType] / 1250) * allTotalListed;
+            return 10 * mintprice[nftType] - (4000 * mintprice[nftType]) / (allTotalMinted - 1000);
         }
     }
 
@@ -161,16 +167,27 @@ contract Marketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
         Listing memory listing = listings[listingId];
         Curve memory curve = curves[listing.nftContract];
         uint256 basePrice = factory.getBasePrice(listing.nftType, listing.tokenId);
-        uint256 exp = 1000000;
-        for (uint256 i = 0; i < curve.totalMinted - curve.totalListed; i++) {
-            exp = exp * curve.exponent;
-            exp = exp / (curve.exponent - 2);
-            if (exp > 10000000) {
-                exp = 10000000;
-                break;
+        uint256 tenMill = 100000000;
+
+        if (allTotalMinted <= 10000) {
+            uint256 exp = tenMill;
+            for (uint256 i = 0; i < curve.totalMinted - curve.totalListed; i++) {
+                exp = exp * curve.exponent;
+                exp = exp / (curve.exponent - 2);
+                if (exp > 10 * tenMill) {
+                    exp = 10 * tenMill;
+                    break;
+                }
             }
+            return basePrice * exp / tenMill;
+        } else {
+            uint256 exp = tenMill;
+            for (uint256 i = 0; i < curve.totalListed; i++) {
+                exp = exp * curve.exponent;
+                exp = exp / (curve.exponent - 2);
+            }
+            return basePrice * exp / tenMill;
         }
-        return basePrice * exp / 1000000;
     }
 
     function _getContractByType(string memory nftType) private view returns (address) {
