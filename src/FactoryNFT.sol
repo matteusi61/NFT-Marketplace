@@ -16,37 +16,37 @@ contract NFTFactory is Ownable {
     string[4] private SUITS = ["S", "H", "D", "C"];
     string[13] private VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     string[30] private stars = [
-            "VEGA",
-            "SIRIUS",
-            "ALPHA",
-            "BETA",
-            "GAMMA",
-            "DELTA",
-            "EPSILON",
-            "ZETA",
-            "ETA",
-            "THETA",
-            "IOTA",
-            "KAPPA",
-            "LAMBDA",
-            "OMEGA",
-            "POLARIS",
-            "ARCTURUS",
-            "RIGEL",
-            "BETELGEUSE",
-            "ALDEBARAN",
-            "CANOPUS",
-            "PROCYON",
-            "CAPELLA",
-            "ANTARES",
-            "SPICA",
-            "DENEB",
-            "FOMALHAUT",
-            "ALTAIR",
-            "MIRACH",
-            "CASTRO",
-            "POLLUX"
-        ];
+        "VEGA",
+        "SIRIUS",
+        "ALPHA",
+        "BETA",
+        "GAMMA",
+        "DELTA",
+        "EPSILON",
+        "ZETA",
+        "ETA",
+        "THETA",
+        "IOTA",
+        "KAPPA",
+        "LAMBDA",
+        "OMEGA",
+        "POLARIS",
+        "ARCTURUS",
+        "RIGEL",
+        "BETELGEUSE",
+        "ALDEBARAN",
+        "CANOPUS",
+        "PROCYON",
+        "CAPELLA",
+        "ANTARES",
+        "SPICA",
+        "DENEB",
+        "FOMALHAUT",
+        "ALTAIR",
+        "MIRACH",
+        "CASTRO",
+        "POLLUX"
+    ];
 
     constructor(address _cardNFT, address _colorNFT, address _starNFT, address owner) Ownable(owner) {
         cardNFT = _cardNFT;
@@ -64,19 +64,15 @@ contract NFTFactory is Ownable {
 
     function generateRandomCard(uint256 randomness) internal view returns (CardNFT.Card memory) {
         bytes32 hash = keccak256(abi.encodePacked(randomness, blockhash(block.number - 1)));
-        
+
         uint256 suitIndex = uint256(hash) % 4;
-        uint256 valueIndex = (uint256(hash) >> 8) % 13; 
-        uint256 someRand = (uint256(hash) >> 16) % 100000; 
-        
-        return CardNFT.Card(
-            string.concat(SUITS[suitIndex], VALUES[valueIndex]),
-            someRand
-        );
+        uint256 valueIndex = (uint256(hash) >> 8) % 13;
+        uint256 someRand = (uint256(hash) >> 16) % 100000;
+
+        return CardNFT.Card(string.concat(SUITS[suitIndex], VALUES[valueIndex]), someRand);
     }
 
     function generateRandomStar(uint256 randomness) internal view returns (StarNFT.Star memory) {
-
         uint256 starIndex = randomness % 30;
         uint256 someRand = uint256(keccak256(abi.encodePacked(block.timestamp, starIndex, randomness))) % 100000;
         return StarNFT.Star(stars[starIndex], someRand);
@@ -85,15 +81,15 @@ contract NFTFactory is Ownable {
     function createNFT(string memory nftType, address to, uint256 randomness) external onlyOwner returns (uint256) {
         if (keccak256(abi.encodePacked(nftType)) == keccak256(abi.encodePacked("card"))) {
             CardNFT.Card memory data = generateRandomCard(randomness);
-            CardNFT(cardNFT).mint(to, data); 
+            CardNFT(cardNFT).mint(to, data);
             return CardNFT(cardNFT)._tokenId() - 1;
         } else if (keccak256(abi.encodePacked(nftType)) == keccak256(abi.encodePacked("color"))) {
             ColorNFT.Color memory data = generateRandomColor(randomness);
-            ColorNFT(colorNFT).mint(to, data); 
+            ColorNFT(colorNFT).mint(to, data);
             return ColorNFT(colorNFT)._tokenId() - 1;
         } else if (keccak256(abi.encodePacked(nftType)) == keccak256(abi.encodePacked("star"))) {
             StarNFT.Star memory data = generateRandomStar(randomness);
-            StarNFT(starNFT).mint(to, data); 
+            StarNFT(starNFT).mint(to, data);
             return StarNFT(starNFT)._tokenId() - 1;
         } else {
             revert("Invalid NFT type");
