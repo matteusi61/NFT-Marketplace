@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Marketplace} from "../src/Marketplace.sol";
+import {MockMarketplace} from "../src/MockMarketplace.sol";
 import {NFTFactory} from "../src/FactoryNFT.sol";
 import {CardNFT} from "../src/CardNFT.sol";
 import {ColorNFT} from "../src/ColorNFT.sol";
@@ -10,7 +10,7 @@ import {StarNFT} from "../src/StarNFT.sol";
 import {IERC721} from "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 
 contract MarketplaceTest is Test {
-    Marketplace public marketplace;
+    MockMarketplace public marketplace;
     NFTFactory public factory;
     CardNFT public cardNFT;
     ColorNFT public colorNFT;
@@ -32,7 +32,7 @@ contract MarketplaceTest is Test {
 
         factory = new NFTFactory(address(cardNFT), address(colorNFT), address(starNFT), owner);
 
-        marketplace = new Marketplace(payable(address(factory)));
+        marketplace = new MockMarketplace(address(factory));
         factory.transferOwnership(address(marketplace));
         cardNFT.transferOwnership(address(factory));
         colorNFT.transferOwnership(address(factory));
@@ -46,7 +46,18 @@ contract MarketplaceTest is Test {
         vm.deal(address(buyer2), 1000 ether);
     }
 
+    function testMintNFTAll() public {
+        vm.startPrank(seller1);
+        marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
+        marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
+        marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
+        console.log("Color - ", colorNFT.tokenURI(0));
+        console.log("Card - ", cardNFT.tokenURI(0));
+        console.log("Star - ", starNFT.tokenURI(0));
+    }
+
     function testMintNFT() public {
+        vm.warp(block.timestamp + 1728);
         vm.startPrank(seller1);
         marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         (,, uint256 totalMinted) = marketplace.curves(address(colorNFT));
