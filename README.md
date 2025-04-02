@@ -1,66 +1,8 @@
-## Foundry
-
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## Адреса в Sepolia
+    == Logs ==
+  CardNFT address is  0xb736812da21dDbb852434DA6F5a8802345985142
+  StarNFT address is  0x5D49a6D4308cC320484cc38649e8572234A6e4D2
+  ColorNFT address is  0x9e0d62da9dBC52b9760FF2AC978A558e31eEAbfe
+  Marketplace address is  0x083F02dBB9eC60D23aA31769399b02c8418448B4
+  FactoryNFT address is  0x5a0C4C814ebd8F3679C951343A6c05fDd1eFE934
+  Proxy address is  0x3973a4b3b34c1D4330b0cc2c9Ff7504Fd61bd728
