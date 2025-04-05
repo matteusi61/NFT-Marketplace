@@ -7,7 +7,7 @@ import {Base64} from "../lib/openzeppelin-contracts/contracts/utils/Base64.sol";
 import {Strings} from "../lib/openzeppelin-contracts/contracts/utils/Strings.sol";
 
 abstract contract MarketNFT is ERC721, Ownable {
-    struct Info{
+    struct Info {
         string str;
         uint256 num;
     }
@@ -18,15 +18,12 @@ abstract contract MarketNFT is ERC721, Ownable {
     uint256 public curveExp;
     uint256 public meanPrice;
 
-    constructor(
-        string memory _name, 
-        string memory symbol,
-        uint256 _exponentCurve,
-        uint256 _meanPrice,
-        address owner
-    ) ERC721(_name, symbol) Ownable(owner) {
-        curveExp=_exponentCurve;
-        meanPrice=_meanPrice;
+    constructor(string memory _name, string memory symbol, uint256 _exponentCurve, uint256 _meanPrice, address owner)
+        ERC721(_name, symbol)
+        Ownable(owner)
+    {
+        curveExp = _exponentCurve;
+        meanPrice = _meanPrice;
     }
 
     function get_price(Info memory data) internal view virtual returns (uint256) {
@@ -34,7 +31,7 @@ abstract contract MarketNFT is ERC721, Ownable {
     }
 
     function generateInfo(uint256 randomness) public virtual onlyOwner returns (Info memory) {
-        return Info('',randomness%10);
+        return Info("", randomness % 10);
     }
 
     function mint(address to, Info memory data) public onlyOwner {
@@ -51,12 +48,6 @@ abstract contract MarketNFT is ERC721, Ownable {
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
         Info memory data = _nftData[tokenId];
-        return string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(bytes(_generateTokenURI(data)))
-            )
-        );
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(bytes(_generateTokenURI(data)))));
     }
-
 }

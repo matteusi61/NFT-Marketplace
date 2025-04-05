@@ -9,47 +9,41 @@ contract StarNFT is MarketNFT {
     using Strings for uint256;
 
     string[30] private stars = [
-            "VEGA",
-            "SIRIUS",
-            "ALPHA",
-            "BETA",
-            "GAMMA",
-            "DELTA",
-            "EPSILON",
-            "ZETA",
-            "ETA",
-            "THETA",
-            "IOTA",
-            "KAPPA",
-            "LAMBDA",
-            "OMEGA",
-            "POLARIS",
-            "ARCTURUS",
-            "RIGEL",
-            "BETELGEUSE",
-            "ALDEBARAN",
-            "CANOPUS",
-            "PROCYON",
-            "CAPELLA",
-            "ANTARES",
-            "SPICA",
-            "DENEB",
-            "FOMALHAUT",
-            "ALTAIR",
-            "MIRACH",
-            "CASTRO",
-            "POLLUX"
-        ];
+        "VEGA",
+        "SIRIUS",
+        "ALPHA",
+        "BETA",
+        "GAMMA",
+        "DELTA",
+        "EPSILON",
+        "ZETA",
+        "ETA",
+        "THETA",
+        "IOTA",
+        "KAPPA",
+        "LAMBDA",
+        "OMEGA",
+        "POLARIS",
+        "ARCTURUS",
+        "RIGEL",
+        "BETELGEUSE",
+        "ALDEBARAN",
+        "CANOPUS",
+        "PROCYON",
+        "CAPELLA",
+        "ANTARES",
+        "SPICA",
+        "DENEB",
+        "FOMALHAUT",
+        "ALTAIR",
+        "MIRACH",
+        "CASTRO",
+        "POLLUX"
+    ];
 
-    constructor(string memory name, 
-        string memory symbol,
-        uint256 _exponentCurve,
-        uint256 _meanPrice,
-        address owner
-    ) MarketNFT(name, symbol,
-         _exponentCurve,
-         _meanPrice,
-         owner) {}
+    constructor(string memory name, string memory symbol, uint256 _exponentCurve, uint256 _meanPrice, address owner)
+        MarketNFT(name, symbol, _exponentCurve, _meanPrice, owner)
+    {}
 
     function get_price(Info memory data) internal view override returns (uint256) {
         uint256 index = 0;
@@ -70,6 +64,6 @@ contract StarNFT is MarketNFT {
     }
 
     function _generateTokenURI(Info memory data) internal pure override returns (string memory) {
-        return string.concat(data.str, "-",  data.num.toString());
+        return string.concat(data.str, "-", data.num.toString());
     }
 }

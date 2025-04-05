@@ -8,16 +8,9 @@ import {Strings} from "../lib/openzeppelin-contracts/contracts/utils/Strings.sol
 contract ColorNFT is MarketNFT {
     using Strings for uint256;
 
-    constructor(string memory name, 
-        string memory symbol,
-        uint256 _exponentCurve,
-        uint256 _meanPrice,
-        address owner
-    ) MarketNFT(name, symbol,
-         _exponentCurve,
-         _meanPrice,
-         owner) {}
-    
+    constructor(string memory name, string memory symbol, uint256 _exponentCurve, uint256 _meanPrice, address owner)
+        MarketNFT(name, symbol, _exponentCurve, _meanPrice, owner)
+    {}
 
     function hexToRGB(string memory hexColor) internal pure returns (uint256 r, uint256 g, uint256 b) {
         uint256 color = hexStringToUint(hexColor);
@@ -38,29 +31,20 @@ contract ColorNFT is MarketNFT {
     }
 
     function charToHexValue(bytes1 c) internal pure returns (uint8) {
-    if (c >= 0x30 && c <= 0x39) {
-        return uint8(c) - 48; 
-    }
-    
-    if (c >= 0x41 && c <= 0x46) {
-        return uint8(c) - 55; 
-    }
-    
-    revert("Invalid hex character");
-}
+        if (c >= 0x30 && c <= 0x39) {
+            return uint8(c) - 48;
+        }
 
-    function _rgbToHex(
-        uint256 r, 
-        uint256 g, 
-        uint256 b
-    ) internal pure returns (string memory) {
-        bytes memory hexBytes = abi.encodePacked(
-            "0x",
-            _byteToHex(r),
-            _byteToHex(g),
-            _byteToHex(b)
-        );
-        
+        if (c >= 0x41 && c <= 0x46) {
+            return uint8(c) - 55;
+        }
+
+        revert("Invalid hex character");
+    }
+
+    function _rgbToHex(uint256 r, uint256 g, uint256 b) internal pure returns (string memory) {
+        bytes memory hexBytes = abi.encodePacked("0x", _byteToHex(r), _byteToHex(g), _byteToHex(b));
+
         return string(hexBytes);
     }
 
@@ -69,7 +53,7 @@ contract ColorNFT is MarketNFT {
         bytes memory hexPair = new bytes(2);
         hexPair[0] = hexAlphabet[value >> 4];
         hexPair[1] = hexAlphabet[value & 0x0F];
-        
+
         return hexPair;
     }
 
@@ -78,7 +62,7 @@ contract ColorNFT is MarketNFT {
         uint256 red;
         uint256 green;
         uint256 blue;
-        (red,green,blue) = hexToRGB(data.str);
+        (red, green, blue) = hexToRGB(data.str);
         return ((red * red + blue * blue + green * green) * 50000000) / max_price;
     }
 
@@ -87,7 +71,7 @@ contract ColorNFT is MarketNFT {
         uint256 red = uint256(hash) & 255;
         uint256 green = uint256(hash >> 8) & 255;
         uint256 blue = uint256(hash >> 16) & 255;
-        return Info(_rgbToHex(red,green,blue), 666);
+        return Info(_rgbToHex(red, green, blue), 666);
     }
 
     function _generateTokenURI(Info memory data) internal pure override returns (string memory) {

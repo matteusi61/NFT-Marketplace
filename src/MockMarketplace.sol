@@ -71,7 +71,7 @@ contract MockMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
         require(msg.value == currPrice, "Insufficient funds");
         payable(owner()).transfer(currPrice);
 
-        uint256 tokenId = factory.createNFT(nftType, msg.sender, block.prevrandao);
+        uint256 tokenId = factory.createNFT(nftType, msg.sender, block.timestamp);
         curves[nftContract].totalMinted += 1;
         allTotalMinted += 1;
         emit NFTMinted(msg.sender, nftContract, tokenId);
@@ -91,8 +91,9 @@ contract MockMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
         }
     }
 
-    function listNFT(address nftContract, uint256 tokenId, string memory nftType) external {
-        require(_isSupportedContract(nftContract), "Unsupported NFT");
+    function listNFT(uint256 tokenId, string memory nftType) external {
+        address nftContract = _getContractByType(nftType);
+        require(nftContract != address(0), "Unsupported NFT");
         require(IERC721(nftContract).ownerOf(tokenId) == msg.sender, "Not owner");
 
         bytes32 listingId = keccak256(abi.encodePacked(block.timestamp, nftContract, tokenId));

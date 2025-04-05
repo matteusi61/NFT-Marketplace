@@ -6,7 +6,6 @@ import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.so
 import {AccessControl} from "../lib/openzeppelin-contracts/contracts/access/AccessControl.sol";
 
 contract NFTFactory is Ownable, AccessControl {
-
     mapping(string => address) nfts;
     string[] keys;
     bytes32 public constant ADMIN = keccak256("ADMINCHIK");
@@ -54,15 +53,15 @@ contract NFTFactory is Ownable, AccessControl {
         keys.push(MarketNFT(newNFT).name());
     }
 
-    function getKeysLen() external view onlyOwner returns (uint256) {
+    function getKeysLen() external view returns (uint256) {
         return keys.length;
     }
 
-    function getNftName(uint256 i) external view onlyOwner returns (string memory) {
+    function getNftName(uint256 i) external view returns (string memory) {
         return keys[i];
     }
 
-    function getNftAddr(string memory name) external view onlyOwner returns (address) {
+    function getNftAddr(string memory name) external view returns (address) {
         bool flag = false;
         for (uint256 i = 0; i < keys.length; i++) {
             if (keccak256(abi.encodePacked(name)) == keccak256(abi.encodePacked(keys[i]))) {

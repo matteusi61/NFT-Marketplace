@@ -155,8 +155,9 @@ contract Marketplace is VRFConsumerBaseV2Plus, ReentrancyGuard, UUPSUpgradeable 
         emit NFTMinted(req.user, req.nftType, tokenId);
     }
 
-    function listNFT(address nftContract, uint256 tokenId, string memory nftType) external {
-        require(_isSupportedContract(nftContract), "Unsupported NFT");
+    function listNFT(uint256 tokenId, string memory nftType) external {
+        address nftContract = _getContractByType(nftType);
+        require(nftContract != address(0), "Unsupported NFT");
         require(IERC721(nftContract).ownerOf(tokenId) == msg.sender, "Not owner");
 
         bytes32 listingId = keccak256(abi.encodePacked(block.timestamp, nftContract, tokenId));
