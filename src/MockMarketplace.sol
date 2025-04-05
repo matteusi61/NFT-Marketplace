@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {MarketNFT} from "./MarketNFT.sol";
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 import {IERC721} from "../lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import {Math} from "../lib/openzeppelin-contracts/contracts/utils/math/Math.sol";
@@ -46,15 +47,18 @@ contract MockMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     }
 
     function _initCurves() internal {
-        curves[factory.colorNFT()] = Curve(2000, 0, 0);
-        curves[factory.cardNFT()] = Curve(1800, 0, 0);
-        curves[factory.starNFT()] = Curve(1600, 0, 0);
+        for (uint256 i = 0; i < factory.getKeysLen(); i++) {
+            address nftAddr = factory.getNftAddr(factory.getNftName(i));
+            curves[nftAddr] = Curve(MarketNFT(nftAddr).curveExp(), 0, 0);
+        }
     }
 
     function _initMints() internal {
-        mintprice["color"] = 16764450 * curves[factory.colorNFT()].exponent / (curves[factory.colorNFT()].exponent - 2);
-        mintprice["card"] = 33000000 * curves[factory.cardNFT()].exponent / (curves[factory.cardNFT()].exponent - 2);
-        mintprice["star"] = 20000000 * curves[factory.starNFT()].exponent / (curves[factory.starNFT()].exponent - 2);
+        for (uint256 i = 0; i < factory.getKeysLen(); i++) {
+            string memory nftName = factory.getNftName(i);
+            address nftAddr = factory.getNftAddr(nftName);
+            mintprice[nftName] = MarketNFT(nftAddr).meanPrice();
+        }
     }
 
     function mintNFT(string memory nftType) external payable nonReentrant {
@@ -189,15 +193,19 @@ contract MockMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
         }
     }
 
-    function _getContractByType(string memory nftType) private view returns (address) {
-        if (keccak256(abi.encodePacked(nftType)) == keccak256(abi.encodePacked("card"))) return factory.cardNFT();
-        if (keccak256(abi.encodePacked(nftType)) == keccak256(abi.encodePacked("color"))) return factory.colorNFT();
-        if (keccak256(abi.encodePacked(nftType)) == keccak256(abi.encodePacked("star"))) return factory.starNFT();
-        return address(0);
+    function _getContractByType(string memory nftType) internal view returns (address) {
+        return factory.getNftAddr(nftType);
     }
 
-    function _isSupportedContract(address nftContract) private view returns (bool) {
-        return nftContract == factory.cardNFT() || nftContract == factory.colorNFT() || nftContract == factory.starNFT();
+    function _isSupportedContract(address nftContract) internal view returns (bool) {
+        for (uint256 i = 0; i < factory.getKeysLen(); i++) {
+            string memory nftName = factory.getNftName(i);
+            address nftAddr = factory.getNftAddr(nftName);
+            if (nftAddr == nftContract) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
