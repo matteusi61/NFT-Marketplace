@@ -15,11 +15,16 @@ contract DeploySepolia is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        CardNFT cardNFT = new CardNFT(deployerAddress);
-        ColorNFT colorNFT = new ColorNFT(deployerAddress);
-        StarNFT starNFT = new StarNFT(deployerAddress);
+        CardNFT cardNFT = new CardNFT("card", "CARD", 1800, 33000000, deployerAddress);
+        ColorNFT colorNFT = new ColorNFT("color", "COLOR", 2000, 16764450, deployerAddress);
+        StarNFT starNFT = new StarNFT("star", "STAR", 1600, 20000000, deployerAddress);
 
-        NFTFactory factory = new NFTFactory(address(cardNFT), address(colorNFT), address(starNFT), deployerAddress);
+        address[] memory nfts = new address[](3);
+        nfts[0] = address(cardNFT);
+        nfts[1] = address(colorNFT);
+        nfts[2] = address(starNFT);
+
+        NFTFactory factory = new NFTFactory(nfts, deployerAddress);
 
         uint256 subID = 42764270243560745292635787825164619464046406123037783646417796868185212121936;
         Marketplace marketplace = new Marketplace(address(factory), subID);

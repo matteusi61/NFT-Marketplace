@@ -8,6 +8,7 @@ import {Math} from "../lib/openzeppelin-contracts/contracts/utils/math/Math.sol"
 import {ReentrancyGuard} from "../lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 import {UUPSUpgradeable} from "../lib/openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {NFTFactory} from "./FactoryNFT.sol";
+import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract MockMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
     using Math for uint256;
@@ -207,6 +208,13 @@ contract MockMarketplace is Ownable, ReentrancyGuard, UUPSUpgradeable {
             }
         }
         return false;
+    }
+
+    function addNewNftToMarket(address newNFT) public onlyOwner {
+        factory.addNewNFT(newNFT);
+        curves[newNFT] = Curve(MarketNFT(newNFT).curveExp(), 0, 0);
+        string memory newNftName = MarketNFT(newNFT).name();
+        mintprice[newNftName] = MarketNFT(newNFT).meanPrice();
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}

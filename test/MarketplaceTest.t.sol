@@ -26,11 +26,16 @@ contract MarketplaceTest is Test {
     function setUp() public {
         vm.startPrank(owner);
 
-        cardNFT = new CardNFT(owner);
-        colorNFT = new ColorNFT(owner);
-        starNFT = new StarNFT(owner);
+        cardNFT = new CardNFT("card", "CARD", 1800, 33000000, owner);
+        colorNFT = new ColorNFT("color", "COLOR", 2000, 16764450, owner);
+        starNFT = new StarNFT("star", "STAR", 1600, 20000000, owner);
 
-        factory = new NFTFactory(address(cardNFT), address(colorNFT), address(starNFT), owner);
+        address[] memory nfts = new address[](3);
+        nfts[0] = address(cardNFT);
+        nfts[1] = address(colorNFT);
+        nfts[2] = address(starNFT);
+
+        factory = new NFTFactory(nfts, owner);
 
         marketplace = new MockMarketplace(address(factory));
         factory.transferOwnership(address(marketplace));
@@ -91,7 +96,7 @@ contract MarketplaceTest is Test {
         uint256 mintprice = marketplace.getMintPrice("color");
         marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         IERC721(address(colorNFT)).approve(address(marketplace), 0);
-        marketplace.listNFT(address(colorNFT), tokenId, "color");
+        marketplace.listNFT(tokenId, "color");
 
         bytes32 listingId = marketplace.allListings(0);
 
@@ -116,7 +121,7 @@ contract MarketplaceTest is Test {
         vm.startPrank(seller1);
         marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
         IERC721(address(colorNFT)).approve(address(marketplace), 0);
-        marketplace.listNFT(address(colorNFT), 0, "color");
+        marketplace.listNFT(0, "color");
         vm.stopPrank();
 
         bytes32 id = marketplace.allListings(0);
@@ -141,19 +146,19 @@ contract MarketplaceTest is Test {
         for (uint256 i = 0; i < 15; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
             IERC721(address(colorNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(colorNFT), i, "color");
+            marketplace.listNFT(i, "color");
         }
 
         for (uint256 i = 0; i < 15; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
             IERC721(address(cardNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(cardNFT), i, "card");
+            marketplace.listNFT(i, "card");
         }
 
         for (uint256 i = 0; i < 15; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
             IERC721(address(starNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(starNFT), i, "star");
+            marketplace.listNFT(i, "star");
         }
         vm.stopPrank();
 
@@ -163,19 +168,19 @@ contract MarketplaceTest is Test {
         for (uint256 i = 15; i < 30; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
             IERC721(address(colorNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(colorNFT), i, "color");
+            marketplace.listNFT(i, "color");
         }
 
         for (uint256 i = 15; i < 30; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
             IERC721(address(cardNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(cardNFT), i, "card");
+            marketplace.listNFT(i, "card");
         }
 
         for (uint256 i = 15; i < 30; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
             IERC721(address(starNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(starNFT), i, "star");
+            marketplace.listNFT(i, "star");
         }
         vm.stopPrank();
 
@@ -185,19 +190,19 @@ contract MarketplaceTest is Test {
         for (uint256 i = 30; i < 45; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("color")}("color");
             IERC721(address(colorNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(colorNFT), i, "color");
+            marketplace.listNFT(i, "color");
         }
 
         for (uint256 i = 30; i < 45; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("card")}("card");
             IERC721(address(cardNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(cardNFT), i, "card");
+            marketplace.listNFT(i, "card");
         }
 
         for (uint256 i = 30; i < 45; i++) {
             marketplace.mintNFT{value: marketplace.getMintPrice("star")}("star");
             IERC721(address(starNFT)).approve(address(marketplace), i);
-            marketplace.listNFT(address(starNFT), i, "star");
+            marketplace.listNFT(i, "star");
         }
         vm.stopPrank();
 

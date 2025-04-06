@@ -3,15 +3,12 @@ pragma solidity ^0.8.28;
 
 import {MarketNFT} from "./MarketNFT.sol";
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
-import {AccessControl} from "../lib/openzeppelin-contracts/contracts/access/AccessControl.sol";
 
-contract NFTFactory is Ownable, AccessControl {
+contract NFTFactory is Ownable {
     mapping(string => address) nfts;
     string[] keys;
-    bytes32 public constant ADMIN = keccak256("ADMINCHIK");
 
     constructor(address[] memory _nfts, address owner) Ownable(owner) {
-        _grantRole(ADMIN, msg.sender);
         for (uint256 i = 0; i < _nfts.length; i++) {
             nfts[MarketNFT(_nfts[i]).name()] = _nfts[i];
             keys.push(MarketNFT(_nfts[i]).name());
@@ -48,7 +45,7 @@ contract NFTFactory is Ownable, AccessControl {
         return MarketNFT(nfts[nftType])._tokenPrice(tokenId);
     }
 
-    function addNewNFT(address newNFT) public onlyRole(ADMIN) {
+    function addNewNFT(address newNFT) public onlyOwner {
         nfts[MarketNFT(newNFT).name()] = newNFT;
         keys.push(MarketNFT(newNFT).name());
     }

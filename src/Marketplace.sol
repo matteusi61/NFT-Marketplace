@@ -284,5 +284,12 @@ contract Marketplace is VRFConsumerBaseV2Plus, ReentrancyGuard, UUPSUpgradeable 
         return false;
     }
 
+    function addNewNftToMarket(address newNFT) public onlyOwner {
+        factory.addNewNFT(newNFT);
+        curves[newNFT] = Curve(MarketNFT(newNFT).curveExp(), 0, 0);
+        string memory newNftName = MarketNFT(newNFT).name();
+        mintprice[newNftName] = MarketNFT(newNFT).meanPrice();
+    }
+
     function _authorizeUpgrade(address) internal override onlyOwner {}
 }
