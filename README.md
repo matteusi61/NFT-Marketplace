@@ -113,10 +113,6 @@ marketplace.addNewNftToMarket(address(newCustomNFT));
 - Валидация входящих параметров
 - Система комиссий (2.5% с каждой сделки)
 
-## Локальное тестирование
-
-![Динамика цен NFT](images/dynamics.jpg)
-
 ## Деплой в сеть Sepolia 
 Актуальные адреса контрактов в тестовой сети:
 - **CardNFT**: [`0xb736812da21dDbb852434DA6F5a8802345985142`](https://sepolia.etherscan.io/address/0xb736812da21dDbb852434DA6F5a8802345985142)
